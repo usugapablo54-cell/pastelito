@@ -1,0 +1,112 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Configuracion
+<script>
+let deferredPrompt;
+const btnInstalar = document.getElementById("btn-instalar-pwa");
+const yaInstalada = document.getElementById("pwa-ya-instalada");
+const noDisponible = document.getElementById("pwa-no-disponible");
+
+if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true) {
+  yaInstalada.style.display = "block";
+} else {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    btnInstalar.style.display = "inline-block";
+  });
+
+  setTimeout(() => {
+    if (!deferredPrompt && btnInstalar.style.display === "none") {
+      noDisponible.style.display = "block";
+    }
+  }, 1500);
+}
+
+btnInstalar.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  btnInstalar.style.display = "none";
+  if (outcome === "accepted") {
+    yaInstalada.style.display = "block";
+  }
+});
+</script>
+{% endblock %}
+{% block content %}
+<h2 class="mb-4">Configuracion</h2>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card card-stat p-4">
+      <h5>Datos del negocio</h5>
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        {{ form.errors }}
+      </div>
+      {% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card card-stat p-4 mb-3">
+      <h5>Categorias de insumos</h5>
+      <p class="text-muted">Administra las categorias usadas en Materia Prima.</p>
+      <a href="{% url "lista_categorias" %}" class="btn btn-outline-primary">Ir a Categorias</a>
+    </div>
+        <div class="card card-stat p-4 mb-3">
+      <h5>Instalar la aplicacion</h5>
+      <p class="text-muted">Agrega esta app a tu pantalla de inicio o menu, como una app normal.</p>
+      <button id="btn-instalar-pwa" class="btn btn-outline-primary" style="display:none;">Instalar aplicacion</button>
+      <p id="pwa-ya-instalada" class="text-muted mb-0" style="display:none;">Ya esta instalada en este dispositivo.</p>
+      <p id="pwa-no-disponible" class="text-muted mb-0" style="display:none;">Tu navegador no permite instalar desde aqui. Busca "Instalar aplicacion" en el menu del navegador.</p>
+    </div>
+  <div class="card card-stat p-4">
+      <h5>Copia de seguridad</h5>
+      <p class="text-muted">Descarga un respaldo de la base de datos.</p>
+      <a href="{% url "descargar_backup" %}" class="btn btn-outline-success">Descargar Backup</a>
+    </div>
+  </div>
+</div>
+
+<script>
+let deferredPrompt;
+const btnInstalar = document.getElementById("btn-instalar-pwa");
+const yaInstalada = document.getElementById("pwa-ya-instalada");
+const noDisponible = document.getElementById("pwa-no-disponible");
+
+if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true) {
+  yaInstalada.style.display = "block";
+} else {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    btnInstalar.style.display = "inline-block";
+  });
+
+  setTimeout(() => {
+    if (!deferredPrompt && btnInstalar.style.display === "none") {
+      noDisponible.style.display = "block";
+    }
+  }, 1500);
+}
+
+btnInstalar.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  btnInstalar.style.display = "none";
+  if (outcome === "accepted") {
+    yaInstalada.style.display = "block";
+  }
+});
+</script>
+{% endblock %}
+
+

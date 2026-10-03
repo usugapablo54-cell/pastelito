@@ -1,0 +1,13 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Eliminar Gasto{% endblock %}
+{% block content %}
+<h2 class="mb-4">Eliminar Gasto</h2>
+<div class="card card-stat p-4" style="max-width:500px;">
+  <p>Seguro que deseas eliminar este gasto de <strong>$ {{ gasto.monto }}</strong> ({{ gasto.get_categoria_display }})?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Si, eliminar</button>
+    <a href="{% url "lista_gastos" %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

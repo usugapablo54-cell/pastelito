@@ -1,0 +1,15 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Movimiento{% endblock %}
+{% block content %}
+<h2 class="mb-4">Nuevo Movimiento</h2>
+<div class="card card-stat p-4" style="max-width:600px;">
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+{% endblock %}

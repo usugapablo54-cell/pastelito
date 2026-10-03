@@ -1,0 +1,46 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Materia Prima{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Insumos y Compras</h2>
+  <a href="{% url "crear_insumo" %}" class="btn btn-primary">+ Nuevo Insumo</a>
+</div>
+
+<div class="card card-stat p-3">
+<div class="table-responsive"><table class="table table-hover mb-0 align-middle">
+  <thead>
+    <tr>
+      <th>Nombre</th><th>Precio compra</th><th>Cantidad</th><th>Stock actual</th>
+      <th>Stock minimo</th><th>Valor stock</th><th>Vence</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in insumos %}
+    <tr class="{% if i.esta_vencido %}table-dark{% elif i.stock_bajo %}table-danger{% elif i.dias_para_vencer is not None and i.dias_para_vencer <= 7 %}table-warning{% endif %}">
+      <td>{{ i.nombre }}{% if i.stock_bajo %} <span class="badge bg-danger">Stock bajo</span>{% endif %}</td>
+      <td>$ {{ i.precio_compra }}</td>
+      <td>{% load l10n %}{% localize off %}{{ i.cantidad|floatformat:"-2" }}{% endlocalize %} {{ i.unidad_medida }}</td>
+      <td>{% localize off %}{{ i.stock_actual|floatformat:"-2" }}{% endlocalize %}</td>
+      <td>{% localize off %}{{ i.stock_minimo|floatformat:"-2" }}{% endlocalize %}</td>
+      <td>$ {{ i.valor_stock|floatformat:0 }}</td>
+      <td>
+        {{ i.fecha_vencimiento|default:"-" }}
+        {% if i.esta_vencido %}
+          <span class="badge bg-dark">Vencido</span>
+        {% elif i.dias_para_vencer is not None and i.dias_para_vencer <= 7 %}
+          <span class="badge bg-warning text-dark">Vence pronto</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url "editar_insumo" i.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+        <a href="{% url "eliminar_insumo" i.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" class="text-muted">No hay insumos registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+</div>
+{% endblock %}
+

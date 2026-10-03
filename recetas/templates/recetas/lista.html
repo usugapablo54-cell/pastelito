@@ -1,0 +1,30 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Recetas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Recetas</h2>
+  <a href="{% url "crear_receta" %}" class="btn btn-primary">+ Nueva Receta</a>
+</div>
+<div class="card card-stat p-3">
+<div class="table-responsive"><table class="table table-hover mb-0 align-middle">
+  <thead><tr><th>Nombre</th><th>Rendimiento</th><th>Costo total</th><th>Costo por unidad</th><th>Acciones</th></tr></thead>
+  <tbody>
+    {% for r in recetas %}
+    <tr>
+      <td>{{ r.nombre }}</td>
+      <td>{{ r.rendimiento }}</td>
+      <td>$ {{ r.costo_total|floatformat:0 }}</td>
+      <td>$ {{ r.costo_por_unidad|floatformat:2 }}</td>
+      <td>
+        <a href="{% url "editar_receta" r.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+        <a href="{% url "eliminar_receta" r.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted">No hay recetas registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+</div>
+{% endblock %}
+

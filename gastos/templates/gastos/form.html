@@ -1,0 +1,12 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Gasto{% endblock %}
+{% block content %}
+<h2 class="mb-4">{% if gasto %}Editar{% else %}Nuevo{% endif %} Gasto</h2>
+<div class="card card-stat p-4" style="max-width:600px;">
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+{% endblock %}

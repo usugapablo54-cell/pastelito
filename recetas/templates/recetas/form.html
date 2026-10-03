@@ -1,0 +1,66 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Receta{% endblock %}
+{% block content %}
+<h2 class="mb-4">{% if receta %}Editar{% else %}Nueva{% endif %} Receta</h2>
+<div class="card card-stat p-4" style="max-width:700px;">
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <h5 class="mt-4">Ingredientes</h5>
+  {{ formset.management_form }}
+  <div id="ingredientes-container">
+    {% for f in formset %}
+      <div class="border rounded p-2 mb-2 ingrediente-fila">
+        {{ f.as_p }}
+      </div>
+    {% endfor %}
+  </div>
+  <button type="button" id="btn-agregar-ingrediente" class="btn btn-outline-primary btn-sm mb-3">+ Agregar otro ingrediente</button>
+  <br>
+  <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+</form>
+</div>
+
+<script>
+document.getElementById("btn-agregar-ingrediente").addEventListener("click", function() {
+  const totalFormsInput = document.querySelector("#id_ingredientes-TOTAL_FORMS");
+  const formCount = parseInt(totalFormsInput.value);
+  const container = document.getElementById("ingredientes-container");
+  const filas = container.querySelectorAll(".ingrediente-fila");
+  const ultimaFila = filas[filas.length - 1];
+
+  const nuevaFila = ultimaFila.cloneNode(true);
+
+  nuevaFila.querySelectorAll("input, select").forEach(function(campo) {
+    const nombreViejo = campo.getAttribute("name");
+    if (!nombreViejo) return;
+    const nombreNuevo = nombreViejo.replace(/-\d+-/, "-" + formCount + "-");
+    const idViejo = campo.getAttribute("id");
+    const idNuevo = idViejo ? idViejo.replace(/-\d+-/, "-" + formCount + "-") : null;
+
+    campo.setAttribute("name", nombreNuevo);
+    if (idNuevo) campo.setAttribute("id", idNuevo);
+
+    if (campo.type === "checkbox") {
+      campo.checked = false;
+    } else if (campo.tagName === "SELECT") {
+      campo.selectedIndex = 0;
+    } else {
+      campo.value = "";
+    }
+  });
+
+  nuevaFila.querySelectorAll("label").forEach(function(label) {
+    const forViejo = label.getAttribute("for");
+    if (forViejo) {
+      label.setAttribute("for", forViejo.replace(/-\d+-/, "-" + formCount + "-"));
+    }
+  });
+
+  container.appendChild(nuevaFila);
+  totalFormsInput.value = formCount + 1;
+});
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,12 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Producto{% endblock %}
+{% block content %}
+<h2 class="mb-4">{% if producto %}Editar{% else %}Nuevo{% endif %} Producto</h2>
+<div class="card card-stat p-4" style="max-width:600px;">
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+{% endblock %}

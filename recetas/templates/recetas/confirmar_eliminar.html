@@ -1,0 +1,18 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Eliminar Receta{% endblock %}
+{% block content %}
+<h2 class="mb-4">Eliminar Receta</h2>
+<div class="card card-stat p-4" style="max-width:500px;">
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    <a href="{% url "lista_recetas" %}" class="btn btn-secondary">Volver</a>
+  {% else %}
+    <p>Seguro que deseas eliminar <strong>{{ receta.nombre }}</strong>?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Si, eliminar</button>
+      <a href="{% url "lista_recetas" %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

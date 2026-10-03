@@ -1,0 +1,75 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Reportes</h2>
+  <div>
+    <a href="{% url "exportar_pdf" %}" class="btn btn-outline-danger btn-sm">Exportar PDF</a>
+    <a href="{% url "exportar_excel" %}" class="btn btn-outline-success btn-sm">Exportar Excel</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Total gastos</small>
+      <h4>$ {{ total_gastos|floatformat:0 }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Ventas estimadas</small>
+      <h4>$ {{ total_ventas_estimadas|floatformat:0 }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Utilidad estimada</small>
+      <h4>$ {{ utilidad_estimada|floatformat:0 }}</h4>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card card-stat p-3">
+      <h5>Gastos por categoria</h5>
+      <ul class="mb-0">
+        {% for g in gastos_por_categoria %}
+          <li>{{ g.categoria }}: $ {{ g.total|floatformat:0 }}</li>
+        {% empty %}<li class="text-muted">Sin datos</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card card-stat p-3">
+      <h5>Compras por proveedor</h5>
+      <ul class="mb-0">
+        {% for c in compras_por_proveedor %}
+          <li>{{ c.proveedor__nombre }}: $ {{ c.total|floatformat:0 }}</li>
+        {% empty %}<li class="text-muted">Sin datos</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card card-stat p-3">
+      <h5>Consumo de materia prima</h5>
+      <ul class="mb-0">
+        {% for c in consumo_materia_prima %}
+          <li>{{ c.insumo__nombre }}: {{ c.total }}</li>
+        {% empty %}<li class="text-muted">Sin datos</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card card-stat p-3">
+      <h5>Productos mas rentables</h5>
+      <ul class="mb-0">
+        {% for p in productos_rentables %}
+          <li>{{ p.nombre }}: $ {{ p.utilidad_unitaria|floatformat:2 }} c/u</li>
+        {% empty %}<li class="text-muted">Sin datos</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

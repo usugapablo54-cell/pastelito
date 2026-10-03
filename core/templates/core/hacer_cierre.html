@@ -1,0 +1,81 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Cierre del dia{% endblock %}
+{% block content %}
+<h2 class="mb-4">Cierre del dia - {{ hoy }}</h2>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Gastos de hoy</small>
+      <h3 class="mb-0">$ {{ total_gastos_hoy|floatformat:0 }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Ingresos de hoy</small>
+      <h3 class="mb-0">$ {{ total_ingresos_hoy|floatformat:0 }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stat p-3">
+      <small class="text-muted">Utilidad de hoy</small>
+      <h3 class="mb-0">$ {{ total_utilidad_hoy|floatformat:0 }}</h3>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card card-stat p-3 h-100">
+      <h5>Ventas de hoy</h5>
+      {% if ventas_hoy %}
+      <ul class="mb-0">
+        {% for v in ventas_hoy %}
+          <li>{{ v.producto.nombre }} x{{ v.cantidad }} - $ {{ v.ingreso_total|floatformat:0 }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted mb-0">No hubo ventas hoy.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card card-stat p-3 h-100">
+      <h5>Gastos de hoy</h5>
+      {% if gastos_hoy %}
+      <ul class="mb-0">
+        {% for g in gastos_hoy %}
+          <li>{{ g.get_categoria_display }} - $ {{ g.monto|floatformat:0 }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted mb-0">No hubo gastos hoy.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card card-stat p-3 mb-4">
+  <h5>Movimientos de inventario de hoy</h5>
+  {% if movimientos_hoy_qs %}
+  <ul class="mb-0">
+    {% for m in movimientos_hoy_qs %}
+      <li>{{ m.get_tipo_display }} - {{ m.insumo.nombre }} ({{ m.cantidad }}) - {{ m.referencia|default:"-" }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-muted mb-0">No hubo movimientos hoy.</p>
+  {% endif %}
+</div>
+
+<div class="card card-stat p-4" style="max-width:600px;">
+  <h5>Confirmar cierre del dia</h5>
+  <p class="text-muted">Esto guarda un resumen permanente en el historial de cierres. Tus gastos, ventas y movimientos siguen disponibles en sus respectivos modulos.</p>
+  <form method="post">
+    {% csrf_token %}
+    <textarea name="notas" class="form-control mb-2" rows="2" placeholder="Notas del dia (opcional)"></textarea>
+    <button type="submit" class="btn btn-primary">Confirmar cierre</button>
+  </form>
+</div>
+{% endblock %}
+ 

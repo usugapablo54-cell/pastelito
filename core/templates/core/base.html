@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+<link rel="icon" type="image/png" href="{% static 'images/icons/icon-192x192.png' %}?v=3">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Costos y Produccion{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --bg-main: #FBF6EE;
+    --bg-card: #FFFFFF;
+    --bg-dark: #4A3126;
+    --bg-dark-hover: #6B4A3A;
+    --text-main: #4A3126;
+    --text-muted: #A6907E;
+    --text-sidebar: #E8D9C5;
+    --accent: #A9744F;
+    --accent-hover: #8F5F3E;
+    --border-color: #6B4A3A;
+  }
+
+  [data-theme="dark"] {
+    --bg-main: #1c1410;
+    --bg-card: #2a1f19;
+    --bg-dark: #120c09;
+    --bg-dark-hover: #2a1f19;
+    --text-main: #F0E4D8;
+    --text-muted: #B39C89;
+    --text-sidebar: #D8C4B0;
+    --accent: #C08A5E;
+    --accent-hover: #D69C6E;
+    --border-color: #3a2c23;
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    background-color: var(--bg-main);
+    transition: background-color 0.2s ease;
+  }
+
+  .topbar {
+    display: flex;
+    background-color: var(--bg-dark);
+    color: var(--text-sidebar);
+    padding: 12px 16px;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; right: 0; left: 240px;
+    z-index: 1050;
+    transition: left 0.25s ease;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .topbar.expanded { left: 0; }
+  .topbar button { background: none; border: none; color: var(--text-sidebar); font-size: 1.4rem; line-height: 1; }
+  .topbar .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .sidebar {
+    height: 100vh;
+    overflow-y: auto;
+    background-color: var(--bg-dark);
+    color: var(--text-sidebar);
+    width: 240px;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1040;
+    transition: left 0.25s ease;
+    border-right: 1px solid var(--border-color);
+  }
+  .sidebar.closed { left: -240px; }
+  .sidebar a { color: var(--text-sidebar); display: flex; align-items: center; padding: 12px 20px; text-decoration: none; border-left: 3px solid transparent; transition: background-color 0.15s ease, border-color 0.15s ease, padding-left 0.15s ease; }
+  .sidebar a:hover { background-color: var(--bg-dark-hover); color: #fff; border-left-color: var(--accent); padding-left: 24px; }
+  .sidebar a.active { background-color: var(--bg-dark-hover); color: #fff; border-left-color: var(--accent); }
+
+  .content {
+    margin-left: 240px;
+    padding: 80px 24px 24px 24px;
+    transition: margin-left 0.25s ease;
+    color: var(--text-main);
+  }
+  .content.expanded { margin-left: 0; }
+
+  .card-stat {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,49,38,0.1);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+  }
+  a .card-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(74,49,38,0.18); }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(74,49,38,0.4); z-index: 1035; }
+  .overlay.open { display: block; }
+
+  h1, h2, h3, h4, h5 { color: var(--text-main); }
+  .btn-primary { background-color: var(--accent); border-color: var(--accent); }
+  .btn-primary:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-outline-primary { color: var(--accent); border-color: var(--accent); }
+  .btn-outline-primary:hover { background-color: var(--accent); border-color: var(--accent); }
+  .text-muted { color: var(--text-muted) !important; }
+
+  [data-theme="dark"] .table { color: var(--text-main); }
+  [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+    background-color: var(--bg-card); color: var(--text-main); border-color: var(--border-color);
+  }
+  [data-theme="dark"] .form-control:focus { background-color: var(--bg-card); color: var(--text-main); }
+  [data-theme="dark"] .text-dark { color: var(--text-main) !important; }
+  [data-theme="dark"] .card-stat small,
+  [data-theme="dark"] .card-stat p,
+  [data-theme="dark"] .card-stat li,
+  [data-theme="dark"] .card-stat ul { color: var(--text-main) !important; }
+  [data-theme="dark"] .table { background-color: transparent; }
+  [data-theme="dark"] .table td, [data-theme="dark"] .table th { border-color: var(--border-color); }
+  [data-theme="dark"] .table-hover tbody tr:hover { background-color: rgba(255,255,255,0.05); color: var(--text-main); }
+  [data-theme="dark"] .table-danger { background-color: rgba(220,53,69,0.25) !important; color: var(--text-main); }
+  [data-theme="dark"] .table-warning { background-color: rgba(255,193,7,0.2) !important; color: var(--text-main); }
+  [data-theme="dark"] .table-success { background-color: rgba(25,135,84,0.2) !important; color: var(--text-main); }
+  [data-theme="dark"] .table-secondary { background-color: rgba(108,117,125,0.2) !important; color: var(--text-main); }
+
+  @media (max-width: 768px) {
+    .sidebar { left: -240px; }
+    .sidebar.open { left: 0; }
+    .topbar { left: 0 !important; }
+    .content { margin-left: 0; padding: 80px 16px 16px 16px; }
+    .card-stat h3, .card-stat h4 { font-size: 1.1rem; }
+    table { font-size: 0.85rem; }
+  }
+  [data-theme="dark"] .card-stat { background-color: var(--bg-card) !important; }
+  [data-theme="dark"] .table { background-color: transparent !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table td, [data-theme="dark"] .table th { border-color: var(--border-color) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table-hover tbody tr:hover { background-color: rgba(255,255,255,0.05) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table-danger, [data-theme="dark"] .table-danger td { background-color: rgba(220,53,69,0.25) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table-warning, [data-theme="dark"] .table-warning td { background-color: rgba(255,193,7,0.2) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table-success, [data-theme="dark"] .table-success td { background-color: rgba(25,135,84,0.2) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table-secondary, [data-theme="dark"] .table-secondary td { background-color: rgba(108,117,125,0.2) !important; color: var(--text-main) !important; }
+  [data-theme="dark"] .table tbody tr { background-color: var(--bg-card) !important; }
+  [data-theme="dark"] .table thead tr { background-color: var(--bg-card) !important; }
+  [data-theme="dark"] .table tbody td, [data-theme="dark"] .table thead th { color: var(--text-main) !important; }
+  [data-theme="dark"] .table {
+    --bs-table-bg: var(--bg-card) !important;
+    --bs-table-color: var(--text-main) !important;
+    --bs-table-striped-bg: var(--bg-card) !important;
+    --bs-table-striped-color: var(--text-main) !important;
+    --bs-table-hover-bg: rgba(255,255,255,0.06) !important;
+    --bs-table-hover-color: var(--text-main) !important;
+    --bs-table-border-color: var(--border-color) !important;
+  }
+  [data-theme="dark"] .table-danger {
+    --bs-table-bg: rgba(220,53,69,0.25) !important;
+    --bs-table-color: var(--text-main) !important;
+  }
+  [data-theme="dark"] .table-warning {
+    --bs-table-bg: rgba(255,193,7,0.2) !important;
+    --bs-table-color: var(--text-main) !important;
+  }
+  [data-theme="dark"] .table-success {
+    --bs-table-bg: rgba(25,135,84,0.2) !important;
+    --bs-table-color: var(--text-main) !important;
+  }
+  [data-theme="dark"] .table-secondary {
+    --bs-table-bg: rgba(108,117,125,0.2) !important;
+    --bs-table-color: var(--text-main) !important;
+  }
+  @media (max-width: 768px) {
+    .btn { font-size: 0.9rem; }
+    .card-stat.p-4 { padding: 1rem !important; }
+    h2 { font-size: 1.5rem; }
+    .d-flex.justify-content-between { flex-wrap: wrap; gap: 8px; }
+    input, select, textarea { font-size: 16px !important; }
+    .row.g-2 > div, .row.g-3 > div { margin-bottom: 4px; }
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg-main); }
+  ::-webkit-scrollbar-thumb { background-color: var(--accent); border-radius: 10px; border: 2px solid var(--bg-main); }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--accent-hover); }
+  .sidebar::-webkit-scrollbar-track { background: var(--bg-dark); }
+  .sidebar::-webkit-scrollbar-thumb { background-color: var(--bg-dark-hover); border: 2px solid var(--bg-dark); }
+  * { scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg-main); }
+  .sidebar { scrollbar-color: var(--bg-dark-hover) var(--bg-dark); }
+  [data-theme="dark"] .btn-outline-dark { color: var(--text-main) !important; border-color: var(--text-main) !important; }
+  [data-theme="dark"] .btn-outline-dark:hover { background-color: var(--text-main) !important; color: var(--bg-main) !important; }
+  [data-theme="dark"] .btn-outline-secondary { color: var(--text-muted) !important; border-color: var(--text-muted) !important; }
+  [data-theme="dark"] .btn-outline-secondary:hover { background-color: var(--text-muted) !important; color: var(--bg-main) !important; }
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button onclick="toggleSidebar()" title="Menu"><i class="bi bi-list"></i></button>
+    <button onclick="history.back()" title="Regresar"><i class="bi bi-arrow-left"></i></button>
+  </div>
+  <span>{{ datos_negocio.nombre }}</span>
+  <div class="topbar-right">
+    <button onclick="toggleTheme()" title="Modo oscuro/claro" id="themeToggleBtn"><i class="bi bi-moon-stars-fill" id="themeIcon"></i></button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="sidebar" id="sidebar">
+  <h4 class="text-center py-4 mb-0 border-bottom" style="color: var(--text-sidebar); border-color: var(--border-color) !important;">{{ datos_negocio.nombre }}</h4>
+  <a href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+  <a href="{% url 'lista_insumos' %}"><i class="bi bi-box-seam me-2"></i>Insumos y Compras</a>
+  <a href="{% url 'vista_stock' %}"><i class="bi bi-clipboard-data me-2"></i>Inventario Actual</a>
+  <a href="{% url 'lista_gastos' %}"><i class="bi bi-cash-coin me-2"></i>Gastos</a>
+  <a href="{% url 'lista_proveedores' %}"><i class="bi bi-truck me-2"></i>Proveedores</a>
+  <a href="{% url 'lista_recetas' %}"><i class="bi bi-journal-text me-2"></i>Recetas</a>
+  <a href="{% url 'lista_productos' %}"><i class="bi bi-tags me-2"></i>Calculadora de Precios</a>
+  <a href="{% url 'lista_ventas_realizadas' %}"><i class="bi bi-cart-check me-2"></i>Registro de Ventas</a>
+  <a href="{% url 'lista_movimientos' %}"><i class="bi bi-arrow-left-right me-2"></i>Historial de Movimientos</a>
+  <a href="{% url 'reportes' %}"><i class="bi bi-bar-chart me-2"></i>Reportes</a>
+  <a href="{% url 'lista_cierres' %}"><i class="bi bi-calendar-check me-2"></i>Cierres</a>
+  <a href="{% url 'configuracion' %}"><i class="bi bi-gear me-2"></i>Configuracion</a>
+</div>
+
+<div class="content" id="content">
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const content = document.getElementById("content");
+    const topbar = document.getElementById("topbar");
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("open");
+    } else {
+      sidebar.classList.toggle("closed");
+      content.classList.toggle("expanded");
+      topbar.classList.toggle("expanded");
+    }
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const icon = document.getElementById("themeIcon");
+    if (theme === "dark") {
+      icon.classList.remove("bi-moon-stars-fill");
+      icon.classList.add("bi-sun-fill");
+    } else {
+      icon.classList.remove("bi-sun-fill");
+      icon.classList.add("bi-moon-stars-fill");
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const next = current === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", next);
+    applyTheme(next);
+  }
+
+  (function() {
+    const saved = localStorage.getItem("theme") || "light";
+    applyTheme(saved);
+  })();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

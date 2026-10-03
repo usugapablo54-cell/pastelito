@@ -1,0 +1,121 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <a href="{% url "lista_gastos" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <small class="text-muted">Costos del mes</small>
+        <h3 class="mb-0 text-dark">$ {{ total_gastos_mes|floatformat:0 }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url "vista_stock" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <small class="text-muted">Valor de inventario</small>
+        <h3 class="mb-0 text-dark">$ {{ valor_inventario|floatformat:0 }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url "lista_ventas_realizadas" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <small class="text-muted">Ingresos del mes</small>
+        <h3 class="mb-0 text-dark">$ {{ ingreso_mes|floatformat:0 }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url "reportes" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <small class="text-muted">Utilidad del mes</small>
+        <h3 class="mb-0 text-dark">$ {{ utilidad_mes|floatformat:0 }}</h3>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <a href="{% url "vista_stock" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <h5 class="text-dark">Productos con poco stock</h5>
+        {% if productos_poco_stock %}
+        <ul class="mb-0 text-dark">
+          {% for i in productos_poco_stock %}
+            <li>{{ i.nombre }} - Stock: {{ i.stock_actual }} {{ i.unidad_medida }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">Todo el stock esta en niveles normales.</p>
+        {% endif %}
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a href="{% url "lista_insumos" %}" class="text-decoration-none">
+      <div class="card card-stat p-3 h-100">
+        <h5 class="text-dark">Insumos por vencer (7 dias)</h5>
+        {% if insumos_por_vencer %}
+        <ul class="mb-0 text-dark">
+          {% for i in insumos_por_vencer %}
+            <li>{{ i.nombre }} - vence {{ i.fecha_vencimiento }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">No hay insumos por vencer pronto.</p>
+        {% endif %}
+      </div>
+    </a>
+  </div>
+</div>
+
+<a href="{% url "lista_gastos" %}" class="text-decoration-none">
+<div class="card card-stat p-3 mb-4">
+  <h5 class="text-dark">Gastos recientes</h5>
+  {% if gastos_recientes %}
+  <ul class="mb-0 text-dark">
+    {% for gasto in gastos_recientes %}
+      <li>{{ gasto.get_categoria_display }} - $ {{ gasto.monto }} ({{ gasto.fecha }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-muted mb-0">Aun no hay gastos registrados.</p>
+  {% endif %}
+</div>
+</a>
+
+<div class="card card-stat p-3">
+  <h5 class="mb-3">Accesos rapidos</h5>
+  <div class="row g-2">
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_insumo' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i>Insumo</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_gasto' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i>Gasto</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_receta' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i>Receta</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_venta_realizada' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i>Venta</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_movimiento' %}" class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-left-right me-1"></i>Movimiento</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'crear_proveedor' %}" class="btn btn-outline-secondary w-100"><i class="bi bi-truck me-1"></i>Proveedor</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'reportes' %}" class="btn btn-outline-dark w-100"><i class="bi bi-bar-chart me-1"></i>Reportes</a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'configuracion' %}" class="btn btn-outline-dark w-100"><i class="bi bi-gear me-1"></i>Config</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
